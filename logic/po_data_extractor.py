@@ -23,9 +23,12 @@ def extract_surface_test_data(pdf_path):
     results_pattern = r"^(.+?)\s+((?:[<>]=?\s*)?\d+(?:\.\d+)?)$" # used to extract results
 
     test_data_pattern = r"\w+\s*\w*\s*\w{3}-\w{6}-\w{2}\s+[\w/\s-]*?(?=/[A-Z]|$)" # used to extract sample data
-    product_name_pattern = r"\w+\s*\w*(?=\w{3}-\w{6}-\w{2})"
+    # product_name_pattern = r"\w+\s*\w*(?=\w{3}-\w{6}-\w{2})"
+    product_name_pattern = r"[a-zA-z ]*\s+(?=\w{3}-\w{6}-\w{2})"
+    cat_block_pattern = r"\w{3}-\w{6}-\w{2}.*?(?=\w{3}-\w{6}-\w{2}|$)"
     cat_number_pattern =r"\w{3}-\w{6}-\w{2}"
     lot_numbers_pattern = r"(?<=\w{3}-\w{6}-\w{2})\s*(.*)"
+    # lot_numbers_pattern = r"(?<=\w{3}-\w{6}-\w{2})\s*(\d+|AMP-\d+-\d+|M\d+|\d+A|\d+N)"
     lot_numbers_spliter_pattern = r"[/, ]"
 
     # Dict to hold all data
@@ -83,14 +86,19 @@ def extract_surface_test_data(pdf_path):
             cat_lot_block = content_split[i + 2]
             break
         
-    items = re.findall(test_data_pattern, cat_lot_block) # extracting sample data
+    products = re.findall(test_data_pattern, cat_lot_block) # extracting sample data
     # Parse LOT# and CAT#
-    for item in items:
-        parsed_cat_lot["Products"].append(re.findall(product_name_pattern,item)[0])
-        parsed_cat_lot["CAT#"].append(re.findall(cat_number_pattern,item)[0])
-        lot_numbers = re.search(lot_numbers_pattern, item).groups()[0] # get all LOT numbers in one string
-        lot_numbers = re.sub(r"\s*", "", lot_numbers) # remove any whitespaces from the LOT string
-        parsed_cat_lot["LOT#"].append(re.split(lot_numbers_spliter_pattern, lot_numbers))
+    for i, product in enumerate(products):
+        parsed_cat_lot["CAT#"].append([])
+        parsed_cat_lot["LOT#"].append([])
+        parsed_cat_lot["Products"].append(re.findall(product_name_pattern,product)[0])
+        # Dividing items by CAT# if there are multiple CAT# for one product
+        items = re.findall(cat_block_pattern, product)
+        for item in items:
+            parsed_cat_lot["CAT#"][i].append(re.findall(cat_number_pattern,item)[0])
+            lot_numbers = re.search(lot_numbers_pattern, item).groups()[0] # get all LOT numbers in one string
+            lot_numbers = re.sub(r"\s*", "", lot_numbers) # remove any whitespaces from the LOT string
+            parsed_cat_lot["LOT#"][i].append(re.split(lot_numbers_spliter_pattern, lot_numbers))
 
     # Cleaning the the products strings from non-alphabetical characters
     for i, product in enumerate(parsed_cat_lot["Products"]):

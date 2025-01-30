@@ -58,14 +58,15 @@ def generate_report(data, po_nmber, po_folder_path ,template_path="resources\\te
             peel_results_check(doc, data["Peel Test"], i)
 
     # Logging Cleaning batch data
-    if data["Surface Test"] and data["Surface Test"]["Samples Data"]["LOT#"]:
+    if data["Surface Test"] and data["Surface Test"]["Samples Data"]["Products"]:
         row_index = 0 # to keep track of the next row
-        for i, lots in enumerate(data["Surface Test"]["Samples Data"]["LOT#"]):
-            for j, lot in enumerate(lots):
-                modify_table_cell(doc, 3, 2 + row_index, 0, data["Surface Test"]["Samples Data"]["CAT#"][i]) # for CAT#
-                modify_table_cell(doc, 3, 2 + row_index, 1, data["Surface Test"]["Samples Data"]["Products"][i]) # for product name
-                modify_table_cell(doc, 3, 2 + row_index, 2, lot) # for LOT#
-                row_index += 1
+        for i, product in enumerate(data["Surface Test"]["Samples Data"]["Products"]):
+            for j, cat in enumerate(data["Surface Test"]["Samples Data"]["CAT#"][i]):
+                for k, lot in enumerate(data["Surface Test"]["Samples Data"]["LOT#"][i][j]):
+                    modify_table_cell(doc, 3, 2 + row_index, 1, product) # for product name
+                    modify_table_cell(doc, 3, 2 + row_index, 0, cat) # for CAT#
+                    modify_table_cell(doc, 3, 2 + row_index, 2, lot) # for LOT#
+                    row_index += 1
 
     # report file path
     file_path = os.path.join(po_folder_path, f"PO {po_nmber}.docx")
