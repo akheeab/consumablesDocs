@@ -33,7 +33,7 @@ def perform_ocr_microbiologica_test(input_pdf_path):
     try:
         doc = fitz.open(input_pdf_path) # opening PDF file
         reader = easyocr.Reader(['en'], gpu=False, recog_network= 'latin_g2') # Object for OCR engine
-        zoom = 4
+        zoom = 5
 
         # Converting the PDF files pages to images
         mat = fitz.Matrix(zoom, zoom) # zoom x and y axes

@@ -298,7 +298,8 @@ def extract_peel_test_data(ocr_output):
     date_received_pattern = r"Date\s+sample\s+received:\s+(.*)"
     date_test_start_pattern = r"Beginning\s+of\s+Test:\s+(.*)"
     date_test_end_pattern = r"End\s+of\s+Test:\s+(.*)"
-    result_pattern = r"Result\s*\d.*?(\d+.\d+)"
+    # result_pattern = r"Result\s*\d.*?(\d+.\d+)"
+    result_pattern = r"Result.*(\d+\.\d+)"
 
     # Extraction
     # Loop over the lines in the OCR output to extract data
@@ -450,7 +451,7 @@ def extract_microbiological_test_data(ocr_output):
         lot_number_exists = True
 
     for i, result in enumerate(ocr_output[results_start_index + 2 if lot_number_exists else results_start_index + 1 : results_end_index : 3 if lot_number_exists else 2]):
-        result = result.replace("l", "1")
+        result = re.sub(r"l|I", "1", result)
         data["Results"].append([f"Sample {i + 1}", result])
 
     return data
