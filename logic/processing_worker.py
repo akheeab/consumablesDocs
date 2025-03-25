@@ -1,6 +1,6 @@
 import os
 import shutil
-# import debugpy
+import debugpy
 
 from PyQt6.QtCore import QObject, pyqtSignal
 from logic.po_data_extractor import (
@@ -9,7 +9,6 @@ from logic.po_data_extractor import (
     extract_peel_test_data,
     extract_microbiological_test_data,
 )
-from logic.ocr_processor import perform_ocr_peel_test, perform_ocr_microbiologica_test
 from logic.report_generator import generate_report
 
 class ProcessingWorker(QObject):
@@ -47,7 +46,7 @@ class ProcessingWorker(QObject):
         try:
             total_tasks = 5 # the processing goes through 5 steps, this is used for the progress bar
             completed_tasks = 0 # start with 0 steps completed
-            # debugpy.debug_this_thread() # Multi threading debugging
+            debugpy.debug_this_thread() # Multi threading debugging
             error_occurred = False  # Flag to indicate an error occurred
             print("Processing Started")
             print("-"*20)
@@ -85,8 +84,7 @@ class ProcessingWorker(QObject):
             if self.files["Peel Test"] and not error_occurred:
                 try:
                     print("Processing Peel Test")
-                    ocr_output = perform_ocr_peel_test(self.files["Peel Test"])
-                    result = extract_peel_test_data(ocr_output)
+                    result = extract_peel_test_data(self.files["Peel Test"])
                     self.check_test_name(result.get("Test Name"), "Package Integrity Test")
                     self.results_structure["Peel Test"] = result
                     self.copy_and_rename_file(self.files["Peel Test"], "Peel Test")
@@ -101,8 +99,7 @@ class ProcessingWorker(QObject):
             if self.files["Microbiological Test"] and not error_occurred:
                 try:
                     print("Processing Microbiological Test")
-                    ocr_output= perform_ocr_microbiologica_test(self.files["Microbiological Test"])
-                    result = extract_microbiological_test_data(ocr_output)
+                    result = extract_microbiological_test_data(self.files["Microbiological Test"])
                     self.check_test_name(result.get("Test Name"), "Microbiological Test")
                     self.results_structure["Microbiological Test"] = result
                     self.copy_and_rename_file(self.files["Microbiological Test"], "Microbiological Test")

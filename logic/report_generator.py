@@ -208,7 +208,7 @@ def microbiological_results_check(doc, data, index):
     # Saving results in one list
     results_list = []
     for i, result in enumerate(data["Results"]):
-        result_match = re.findall(r"[^0-9]*([0-9]*)", result[1])
+        result_match = re.findall(r"[^0-9]*([0-9]*)", result)
         results_list.append(int(result_match[0]))
 
     # Check product type, test result and writing to the table
@@ -268,7 +268,7 @@ def peel_results_check(doc, data, index):
     modify_table_cell(doc, 2, 1 + index, 1, data["Test Number"])
 
     # check if the value passes or fails
-    if float(data["Results"][index][1]) > 1.5:
+    if float(data["Results"][index]) > 1.5:
         modify_table_cell(doc, 2, 1 + index, 2, "☑ Pass ☐ Fail")
     else:
         modify_table_cell(doc, 2, 1 + index, 2, "☐ Pass ☑ Fail")

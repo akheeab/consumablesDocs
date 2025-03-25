@@ -83,7 +83,6 @@ project_root/
 │   ├── __init__.py
 │   ├── data_logger.py
 │   ├── file_processor.py
-│   ├── ocr_processor.py
 │   ├── po_data_extractor.py
 │   ├── processing_worker.py
 │   └── report_generator.py
