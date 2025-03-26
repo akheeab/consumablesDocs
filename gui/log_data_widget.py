@@ -62,6 +62,7 @@ class LogDataWidget(QWidget):
             # Get the PO number
             po_number = self.po_input.input_field.text().strip()
             if not po_number:
+                self.show_error_dialog("Please enter a valid PO Number")
                 print("PO number is not entered.")
                 self.spinner.reset_spinner()
                 return
@@ -74,8 +75,9 @@ class LogDataWidget(QWidget):
             }
 
             # Check if files are picked
-            if not any(files.values()):
-                print("No files selected.")
+            if not all(files.values()):
+                self.show_error_dialog("Make sure to pick all files")
+                print("Some files are not selected.")
                 self.spinner.reset_spinner()
                 return
 

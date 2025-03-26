@@ -6,6 +6,7 @@ class POInputWidget(QWidget):
         layout = QVBoxLayout()
         self.label = QLabel("PO Number:")
         self.input_field = QLineEdit()
+        self.input_field.setInputMask("999999") # Setting the input field to take numbers only of 6 digits
         layout.addWidget(self.label)
         layout.addWidget(self.input_field)
         self.setLayout(layout)
