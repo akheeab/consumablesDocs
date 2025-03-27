@@ -1,12 +1,13 @@
 import re
 from PyPDF2 import PdfReader
+import pdfplumber
 
 def extract_surface_test_data(pdf_path):
 
     # Read the PDF content
-    reader = PdfReader(pdf_path)
-    content = "\n".join(page.extract_text() for page in reader.pages)
-    content_split = content.split("\n") # split PdfReader into lines
+    with pdfplumber.open(pdf_path) as pdf:
+        content = "\n".join(page.extract_text() for page in pdf.pages)
+    content_split = content.split("\n")
 
     # Regular expressions for extracting samples and results
     test_number_pattern = r"Test\sCertificate\s+([A-Za-z0-9]+)"
@@ -45,31 +46,31 @@ def extract_surface_test_data(pdf_path):
     }
 
     # Extract Test number
-    test_number = re.findall(test_number_pattern, content_split[4])[0]
+    test_number = re.findall(test_number_pattern, content_split[5])[0]
 
     # Extract Report Date
-    report_date = re.findall(report_date_pattern, content_split[5])[0]
+    report_date = re.findall(report_date_pattern, content_split[6])[0]
 
     # Extract Number of Samples
-    number_of_samples = re.findall(number_of_samples_pattern, content_split[6])[0]
+    number_of_samples = re.findall(number_of_samples_pattern, content_split[7])[0]
 
     # Extract Test Name
-    test_name = re.findall(test_name_pattern, content_split[7])[0]
+    test_name = re.findall(test_name_pattern, content_split[8])[0]
 
     # Extract Purchase Order
-    purchase_order = re.findall(purchase_order_pattern, content_split[8])[0]
+    purchase_order = re.findall(purchase_order_pattern, content_split[9])[0]
 
     # Extract Date Received
-    date_received = re.findall(date_received_pattern, content_split[9])[0]
+    date_received = re.findall(date_received_pattern, content_split[10])[0]
 
     # Extract date of sample
-    date_of_sample = re.findall(date_of_sample_pattern, content_split[10])[0]
+    date_of_sample = re.findall(date_of_sample_pattern, content_split[11])[0]
 
     # Extract State of Sample
-    state_of_sample = re.findall(state_of_sample_pattern, content_split[11])[0]
+    state_of_sample = re.findall(state_of_sample_pattern, content_split[12])[0]
 
     # Extract Substance Sampled
-    substance_sampled = re.findall(substance_sampled_pattern, content_split[12])[0]
+    substance_sampled = re.findall(substance_sampled_pattern, content_split[13])[0]
 
     # Extract samples LOT# and CAT#
     parsed_cat_lot = {
@@ -137,11 +138,12 @@ def extract_surface_test_data(pdf_path):
     return data
 
 def extract_air_test_data(pdf_path):
-
+    
     # Read the PDF content
-    reader = PdfReader(pdf_path)
-    content = "\n".join(page.extract_text() for page in reader.pages)
-    content_split = content.split("\n") # split PdfReader into lines
+    with pdfplumber.open(pdf_path) as pdf:
+        content = "\n".join(page.extract_text() for page in pdf.pages)
+    content_split = content.split("\n")
+
 
     # Regular expressions for extracting samples and results
     test_number_pattern = r"Test Certificate\s+([A-Za-z0-9]+)" # used to extract the test number
@@ -179,31 +181,31 @@ def extract_air_test_data(pdf_path):
     }
 
     # Extract Test number
-    test_number = re.findall(test_number_pattern, content_split[4])[0]
+    test_number = re.findall(test_number_pattern, content_split[5])[0]
 
     # Extract Report Date
-    report_date = re.findall(report_date_pattern, content_split[5])[0]
+    report_date = re.findall(report_date_pattern, content_split[6])[0]
 
     # Extract Number of Samples
-    number_of_samples = re.findall(number_of_samples_pattern, content_split[6])[0]
+    number_of_samples = re.findall(number_of_samples_pattern, content_split[7])[0]
 
     # Extract Test Name
-    test_name = re.findall(test_name_pattern, content_split[7])[0]
+    test_name = re.findall(test_name_pattern, content_split[8])[0]
 
     # Extract Purchase Order
-    purchase_order = re.findall(purchase_order_pattern, content_split[8])[0]
+    purchase_order = re.findall(purchase_order_pattern, content_split[9])[0]
 
     # Extract Date Received
-    date_received = re.findall(date_received_pattern, content_split[9])[0]
+    date_received = re.findall(date_received_pattern, content_split[10])[0]
 
     # Extract date of sample
-    date_of_sample = re.findall(date_of_sample_pattern, content_split[10])[0]
+    date_of_sample = re.findall(date_of_sample_pattern, content_split[11])[0]
 
     # Extract State of Sample
-    state_of_sample = re.findall(state_of_sample_pattern, content_split[11])[0]
+    state_of_sample = re.findall(state_of_sample_pattern, content_split[12])[0]
 
     # Extract Substance Sampled
-    substance_sampled = re.findall(substance_sampled_pattern, content_split[12])[0]
+    substance_sampled = re.findall(substance_sampled_pattern, content_split[13])[0]
 
     # Extract samples LOT# and CAT#
     parsed_cat_lot = {
@@ -262,10 +264,11 @@ def extract_air_test_data(pdf_path):
     return data
 
 def extract_peel_test_data(pdf_path):
+
     # Read the PDF content
-    reader = PdfReader(pdf_path)
-    content = "\n".join(page.extract_text() for page in reader.pages)
-    content_split = content.split("\n") # split PdfReader into lines
+    with pdfplumber.open(pdf_path) as pdf:
+        content = "\n".join(page.extract_text() for page in pdf.pages)
+    content_split = content.split("\n")
 
     # Regular expressions for extracting samples and results
     test_name_pattern = r".*"
@@ -341,7 +344,7 @@ def extract_peel_test_data(pdf_path):
                 date_end_of_test_index = i
 
         if not results_block_start_index:
-            if "Specification" in line:
+            if "Annex" in line:
                 results_block_start_index = i
         
     # Extraction
@@ -360,10 +363,11 @@ def extract_peel_test_data(pdf_path):
     return data
 
 def extract_microbiological_test_data(pdf_path):
+
     # Read the PDF content
-    reader = PdfReader(pdf_path)
-    content = "\n".join(page.extract_text() for page in reader.pages)
-    content_split = content.split("\n") # split PdfReader into lines
+    with pdfplumber.open(pdf_path) as pdf:
+        content = "\n".join(page.extract_text() for page in pdf.pages)
+    content_split = content.split("\n")
 
     # Regular expressions for extracting samples and results
     test_name_pattern = r".*"
