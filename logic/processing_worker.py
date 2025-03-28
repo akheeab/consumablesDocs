@@ -1,6 +1,6 @@
 import os
 import shutil
-import debugpy
+# import debugpy
 
 from PyQt6.QtCore import QObject, pyqtSignal
 from logic.po_data_extractor import (
@@ -46,7 +46,7 @@ class ProcessingWorker(QObject):
         try:
             total_tasks = 5 # the processing goes through 5 steps, this is used for the progress bar
             completed_tasks = 0 # start with 0 steps completed
-            debugpy.debug_this_thread() # Multi threading debugging
+            # debugpy.debug_this_thread() # Multi threading debugging
             error_occurred = False  # Flag to indicate an error occurred
             print("Processing Started")
             print("-"*20)

@@ -1,5 +1,4 @@
 import re
-from PyPDF2 import PdfReader
 import pdfplumber
 
 def extract_surface_test_data(pdf_path):
