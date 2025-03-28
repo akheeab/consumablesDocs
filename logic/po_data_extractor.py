@@ -9,6 +9,7 @@ def extract_surface_test_data(pdf_path):
         content = "\n".join(page.extract_text() for page in pdf.pages)
     content_split = content.split("\n")
 
+
     # Regular expressions for extracting samples and results
     test_number_pattern = r"Test\sCertificate\s+([A-Za-z0-9]+)"
     report_date_pattern = r"(\d+/\d+/\d+)"
@@ -45,32 +46,38 @@ def extract_surface_test_data(pdf_path):
         "Results": None
     }
 
+    # Finding test number and using it as a guide to extract all other data
+    for i, line in enumerate(content_split):
+        if "Certificate" in line:
+            test_number_index = i
+            break
+
     # Extract Test number
-    test_number = re.findall(test_number_pattern, content_split[5])[0]
+    test_number = re.findall(test_number_pattern, content_split[test_number_index])[0]
 
     # Extract Report Date
-    report_date = re.findall(report_date_pattern, content_split[6])[0]
+    report_date = re.findall(report_date_pattern, content_split[test_number_index + 1])[0]
 
     # Extract Number of Samples
-    number_of_samples = re.findall(number_of_samples_pattern, content_split[7])[0]
+    number_of_samples = re.findall(number_of_samples_pattern, content_split[test_number_index + 2])[0]
 
     # Extract Test Name
-    test_name = re.findall(test_name_pattern, content_split[8])[0]
+    test_name = re.findall(test_name_pattern, content_split[test_number_index + 3])[0]
 
     # Extract Purchase Order
-    purchase_order = re.findall(purchase_order_pattern, content_split[9])[0]
+    purchase_order = re.findall(purchase_order_pattern, content_split[test_number_index + 4])[0]
 
     # Extract Date Received
-    date_received = re.findall(date_received_pattern, content_split[10])[0]
+    date_received = re.findall(date_received_pattern, content_split[test_number_index + 5])[0]
 
     # Extract date of sample
-    date_of_sample = re.findall(date_of_sample_pattern, content_split[11])[0]
+    date_of_sample = re.findall(date_of_sample_pattern, content_split[test_number_index + 6])[0]
 
     # Extract State of Sample
-    state_of_sample = re.findall(state_of_sample_pattern, content_split[12])[0]
+    state_of_sample = re.findall(state_of_sample_pattern, content_split[test_number_index + 7])[0]
 
     # Extract Substance Sampled
-    substance_sampled = re.findall(substance_sampled_pattern, content_split[13])[0]
+    substance_sampled = re.findall(substance_sampled_pattern, content_split[test_number_index + 8])[0]
 
     # Extract samples LOT# and CAT#
     parsed_cat_lot = {
@@ -180,32 +187,38 @@ def extract_air_test_data(pdf_path):
         "Results": None
     }
 
+    # Finding test number and using it as a guide to extract all other data
+    for i, line in enumerate(content_split):
+        if "Certificate" in line:
+            test_number_index = i
+            break
+        
     # Extract Test number
-    test_number = re.findall(test_number_pattern, content_split[5])[0]
+    test_number = re.findall(test_number_pattern, content_split[test_number_index])[0]
 
     # Extract Report Date
-    report_date = re.findall(report_date_pattern, content_split[6])[0]
+    report_date = re.findall(report_date_pattern, content_split[test_number_index + 1])[0]
 
     # Extract Number of Samples
-    number_of_samples = re.findall(number_of_samples_pattern, content_split[7])[0]
+    number_of_samples = re.findall(number_of_samples_pattern, content_split[test_number_index + 2])[0]
 
     # Extract Test Name
-    test_name = re.findall(test_name_pattern, content_split[8])[0]
+    test_name = re.findall(test_name_pattern, content_split[test_number_index + 3])[0]
 
     # Extract Purchase Order
-    purchase_order = re.findall(purchase_order_pattern, content_split[9])[0]
+    purchase_order = re.findall(purchase_order_pattern, content_split[test_number_index + 4])[0]
 
     # Extract Date Received
-    date_received = re.findall(date_received_pattern, content_split[10])[0]
+    date_received = re.findall(date_received_pattern, content_split[test_number_index + 5])[0]
 
     # Extract date of sample
-    date_of_sample = re.findall(date_of_sample_pattern, content_split[11])[0]
+    date_of_sample = re.findall(date_of_sample_pattern, content_split[test_number_index + 6])[0]
 
     # Extract State of Sample
-    state_of_sample = re.findall(state_of_sample_pattern, content_split[12])[0]
+    state_of_sample = re.findall(state_of_sample_pattern, content_split[test_number_index + 7])[0]
 
     # Extract Substance Sampled
-    substance_sampled = re.findall(substance_sampled_pattern, content_split[13])[0]
+    substance_sampled = re.findall(substance_sampled_pattern, content_split[test_number_index + 8])[0]
 
     # Extract samples LOT# and CAT#
     parsed_cat_lot = {
@@ -367,6 +380,8 @@ def extract_microbiological_test_data(pdf_path):
     # Read the PDF content
     with pdfplumber.open(pdf_path) as pdf:
         content = "\n".join(page.extract_text() for page in pdf.pages)
+        # Extract tables
+        tables = [table for page in pdf.pages for table in page.extract_tables()]
     content_split = content.split("\n")
 
     # Regular expressions for extracting samples and results
@@ -423,37 +438,42 @@ def extract_microbiological_test_data(pdf_path):
             if "Laboratory" in line and "Number" in line:
                 test_number_index = i
         
-        if not sample_block_start_index:
-            if "Sample" in line and "description " in line:
-                # Find the exact line that has product names
-                temp_index = i
-                while True:
-                    if "Product" in content_split[temp_index] and "name" in content_split[temp_index]:
-                        sample_block_start_index = temp_index
-                        break
-                    temp_index += 1
-
-        if not results_block_start_index:
-            if "Corrected" in line:
-                results_block_start_index = i + 1
-
     # Extraction
     test_name = re.findall(test_name_pattern, content_split[test_name_index])[0]
     test_number = re.findall(test_number_pattern, content_split[test_number_index])[0]
 
     # Extract samples data
-    samples_names = re.findall(samples_name_pattern, content_split[sample_block_start_index], re.IGNORECASE)
-    samples_cats = re.findall(samples_cat_pattern, content_split[sample_block_start_index + 1])
-    samples_lots = re.findall(samples_lot_pattern, content_split[sample_block_start_index + 2])
+    # Placeholders for samples data
+    samples_names = []
+    samples_cats =[]
+    samples_lots = []
+    # Temporary placeholders for smaple data exraction
+    temp_product = None
+    temp_cat = []
+    temp_lots = [] # For LOTs of multiple CAT#
+    temp_lot = [] # For LOTs of a single CAT#
+    # Sample data extraction
+    for i, product in enumerate(tables[0][0][:-1]):
+        if product:
+            temp_product = product
+            temp_cat = []
+            temp_lots = []
+        if tables[0][1][i]:
+            temp_cat.append(tables[0][1][i])
+            temp_lot = []
+        temp_lot.append(tables[0][2][i])        
+        if tables[0][1][i + 1]: # Check if another CAR# was found to log previous LOT
+            temp_lots.append(temp_lot)
+        if tables[0][0][i + 1] and tables[0][1][i + 1]: # Check if another product was found to log previous data by looking ahead for CAT# and product name in the same column
+            samples_names.append(temp_product)
+            samples_cats.append(temp_cat)
+            samples_lots.append(temp_lots)
 
     # Extract results
-    temp_index = results_block_start_index
-    while True:
-        if content_split[temp_index][0].isdigit():
-            data["Results"].append(re.findall(result_pattern, content_split[temp_index])[0])
-            temp_index += 1
-        else: 
-            break
+    results = [] # Placeholder for results
+    for i, result in enumerate(tables[-1][1:]):
+        results.append(result[2])
+
     # TODO: Extract the rest of the data
 
     data["Test Name"] = ' '.join(test_name.split())
@@ -461,5 +481,6 @@ def extract_microbiological_test_data(pdf_path):
     data["Samples"]["Products"] = samples_names
     data["Samples"]["CAT#"] = samples_cats
     data["Samples"]["LOT#"] = samples_lots
+    data["Results"] = results
 
     return data

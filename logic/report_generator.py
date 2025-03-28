@@ -47,10 +47,14 @@ def generate_report(data, po_nmber, po_folder_path ,template_path="resources\\te
     # Logging Micro test data
     # Iterate over the samples
     if data["Microbiological Test"]:
-        for i in range((len(data["Microbiological Test"]["Samples"]["LOT#"]))):
-            # Write Lot and Report Numbers
-            # Write the type of product and decide if the lot passed or not
-            microbiological_results_check(doc, data["Microbiological Test"], i)
+        lot_index = 0
+        for i, product in enumerate(data["Microbiological Test"]["Samples"]["LOT#"]):
+            for j, lots in enumerate(product):
+                for k, lot in enumerate(lots):
+                    # Write Lot and Report Numbers
+                    # Write the type of product and decide if the lot passed or not
+                    lot_index += 1
+                    microbiological_results_check(doc, data["Microbiological Test"], lot_index, i, j, k)
 
     # Logging Peel test data
     if data["Peel Test"]:
@@ -199,11 +203,11 @@ def air_test_results_check(data):
 
     return test_results
 
-def microbiological_results_check(doc, data, index):
+def microbiological_results_check(doc, data, lot_index, index1, index2, index3):
 
     # Write Test and Lot numbers
-    modify_table_cell(doc, 1, 1 + index, 2, data["Samples"]["LOT#"][index])
-    modify_table_cell(doc, 1, 1 + index, 3, data["Test Number"])
+    modify_table_cell(doc, 1, lot_index, 2, data["Samples"]["LOT#"][index1][index2][index3])
+    modify_table_cell(doc, 1, lot_index, 3, data["Test Number"])
 
     # Saving results in one list
     results_list = []
@@ -212,55 +216,55 @@ def microbiological_results_check(doc, data, index):
         results_list.append(int(result_match[0]))
 
     # Check product type, test result and writing to the table
-    match data["Samples"]["Products"][0].lower():
+    match data["Samples"]["Products"][index1].lower():
 
         case "neuroprobe":
             product_string = "☑NeuroProbe \n☐Cannula \xa0\n☐ LeadConfirm cable\n☐ LeadConfirm Adaptor\n☐ AlphaProbe cable\n☐ Electrode cable"
-            modify_table_cell(doc, 1, 1 + index, 1, product_string, font_size=10)
+            modify_table_cell(doc, 1, lot_index, 1, product_string, font_size=10)
             if all(value <= 10 for value in results_list):
-                modify_table_cell(doc, 1, 1 + index, 4, "☑ Pass \xa0☐ Fail")
+                modify_table_cell(doc, 1, lot_index, 4, "☑ Pass \xa0☐ Fail")
             else:
-                modify_table_cell(doc, 1, 1 + index, 4, "☐ Pass \xa0☑ Fail")
+                modify_table_cell(doc, 1, lot_index, 4, "☐ Pass \xa0☑ Fail")
 
         case "cannula":
             product_string = "☐NeuroProbe \n☑Cannula \xa0\n☐ LeadConfirm cable\n☐ LeadConfirm Adaptor\n☐ AlphaProbe cable\n☐ Electrode cable"
-            modify_table_cell(doc, 1, 1 + index, 1, product_string, font_size=10)
+            modify_table_cell(doc, 1, lot_index, 1, product_string, font_size=10)
             if all(value <= 10 for value in results_list):
-                modify_table_cell(doc, 1, 1 + index, 4, "☑ Pass \xa0☐ Fail")
+                modify_table_cell(doc, 1, lot_index, 4, "☑ Pass \xa0☐ Fail")
             else:
-                modify_table_cell(doc, 1, 1 + index, 4, "☐ Pass \xa0☑ Fail")
+                modify_table_cell(doc, 1, lot_index, 4, "☐ Pass \xa0☑ Fail")
 
         case "leadconfirm cable":
             product_string = "☐NeuroProbe \n☐Cannula \xa0\n☑ LeadConfirm cable\n☐ LeadConfirm Adaptor\n☐ AlphaProbe cable\n☐ Electrode cable"
-            modify_table_cell(doc, 1, 1 + index, 1, product_string, font_size=10)
+            modify_table_cell(doc, 1, lot_index, 1, product_string, font_size=10)
             if all(value <= 100 for value in results_list):
-                modify_table_cell(doc, 1, 1 + index, 4, "☑ Pass \xa0☐ Fail")
+                modify_table_cell(doc, 1, lot_index, 4, "☑ Pass \xa0☐ Fail")
             else:
-                modify_table_cell(doc, 1, 1 + index, 4, "☐ Pass \xa0☑ Fail")
+                modify_table_cell(doc, 1, lot_index, 4, "☐ Pass \xa0☑ Fail")
 
         case "leadconfirm adaptor":
             product_string = "☐NeuroProbe \n☐Cannula \xa0\n☐ LeadConfirm cable\n☑ LeadConfirm Adaptor\n☐ AlphaProbe cable\n☐ Electrode cable"
-            modify_table_cell(doc, 1, 1 + index, 1, product_string, font_size=10)
+            modify_table_cell(doc, 1, lot_index, 1, product_string, font_size=10)
             if all(value <= 100 for value in results_list):
-                modify_table_cell(doc, 1, 1 + index, 4, "☑ Pass \xa0☐ Fail")
+                modify_table_cell(doc, 1, lot_index, 4, "☑ Pass \xa0☐ Fail")
             else:
-                modify_table_cell(doc, 1, 1 + index, 4, "☐ Pass \xa0☑ Fail")
+                modify_table_cell(doc, 1, lot_index, 4, "☐ Pass \xa0☑ Fail")
 
         case "alphaprobe cable":
             product_string = "☐NeuroProbe \n☐Cannula \xa0\n☐ LeadConfirm cable\n☐ LeadConfirm Adaptor\n☑ AlphaProbe cable\n☐ Electrode cable"
-            modify_table_cell(doc, 1, 1 + index, 1, product_string, font_size=10)
+            modify_table_cell(doc, 1, lot_index, 1, product_string, font_size=10)
             if all(value <= 100 for value in results_list):
-                modify_table_cell(doc, 1, 1 + index, 4, "☑ Pass \xa0☐ Fail")
+                modify_table_cell(doc, 1, lot_index, 4, "☑ Pass \xa0☐ Fail")
             else:
-                modify_table_cell(doc, 1, 1 + index, 4, "☐ Pass \xa0☑ Fail")
+                modify_table_cell(doc, 1, lot_index, 4, "☐ Pass \xa0☑ Fail")
 
         case "electrode cable":
             product_string = "☐NeuroProbe \n☐Cannula \xa0\n☐ LeadConfirm cable\n☐ LeadConfirm Adaptor\n☐ AlphaProbe cable\n☑ Electrode cable"
-            modify_table_cell(doc, 1, 1 + index, 1, product_string, font_size=10)
+            modify_table_cell(doc, 1, lot_index, 1, product_string, font_size=10)
             if all(value <= 100 for value in results_list):
-                modify_table_cell(doc, 1, 1 + index, 4, "☑ Pass \xa0☐ Fail")
+                modify_table_cell(doc, 1, lot_index, 4, "☑ Pass \xa0☐ Fail")
             else:
-                modify_table_cell(doc, 1, 1 + index, 4, "☐ Pass \xa0☑ Fail")        
+                modify_table_cell(doc, 1, lot_index, 4, "☐ Pass \xa0☑ Fail")        
 
 def peel_results_check(doc, data, index):
 
