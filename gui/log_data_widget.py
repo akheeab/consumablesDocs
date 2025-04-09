@@ -74,9 +74,9 @@ class LogDataWidget(QWidget):
                 "Microbiological Test": self.microbiological_test_file
             }
 
-            # Check if files are picked
+            # Check if files are select
             if not all(files.values()):
-                self.show_error_dialog("Make sure to pick all files")
+                self.show_error_dialog("Make sure to select all files")
                 print("Some files are not selected.")
                 self.spinner.reset_spinner()
                 return
