@@ -45,38 +45,82 @@ def extract_surface_test_data(pdf_path):
         "Results": None
     }
 
-    # Finding test number and using it as a guide to extract all other data
+
+    # Indecies placeholders
+    test_number_index         = None
+    report_date_index         = None
+    number_of_samples_index   = None
+    test_name_index           = None
+    purchase_order_index      = None
+    date_received_index       = None
+    date_of_sample_index      = None
+    state_of_sample_index     = None
+    substance_sampled_index   = None
+
+    # Iterating over the output to find required indecies
     for i, line in enumerate(content_split):
-        if "Certificate" in line:
-            test_number_index = i
-            break
+
+        if not test_number_index:
+            if "test" in line.lower() and "certificate" in line.lower():
+                test_number_index = i
+
+        if not report_date_index:
+            pass
+
+        if not number_of_samples_index:
+            pass
+        
+        if not test_name_index:
+            if "sample" in line.lower() and "description" in line.lower():
+                test_name_index = i
+        
+        if not purchase_order_index:
+            pass
+
+        if not date_received_index:
+            pass
+        if not date_of_sample_index:
+            pass
+
+        if not state_of_sample_index:
+            pass
+
+        if not substance_sampled_index:
+            pass
+        # TODO: Extract the rest of the indecies
+
+    # Finding test number and using it as a guide to extract all other data
+    # for i, line in enumerate(content_split):
+    #     if "Certificate" in line:
+    #         test_number_index = i
+    #         break
 
     # Extract Test number
     test_number = re.findall(test_number_pattern, content_split[test_number_index])[0]
 
     # Extract Report Date
-    report_date = re.findall(report_date_pattern, content_split[test_number_index + 1])[0]
+    # report_date = re.findall(report_date_pattern, content_split[test_number_index + 1])[0]
 
     # Extract Number of Samples
-    number_of_samples = re.findall(number_of_samples_pattern, content_split[test_number_index + 2])[0]
+    # number_of_samples = re.findall(number_of_samples_pattern, content_split[test_number_index + 2])[0]
 
     # Extract Test Name
-    test_name = re.findall(test_name_pattern, content_split[test_number_index + 3])[0]
+    test_name = re.findall(test_name_pattern, content_split[test_name_index])[0]
 
     # Extract Purchase Order
-    purchase_order = re.findall(purchase_order_pattern, content_split[test_number_index + 4])[0]
+    # purchase_order = re.findall(purchase_order_pattern, content_split[test_number_index + 4])[0]
 
     # Extract Date Received
-    date_received = re.findall(date_received_pattern, content_split[test_number_index + 5])[0]
+    # date_received = re.findall(date_received_pattern, content_split[test_number_index + 5])[0]
 
     # Extract date of sample
-    date_of_sample = re.findall(date_of_sample_pattern, content_split[test_number_index + 6])[0]
+    # date_of_sample = re.findall(date_of_sample_pattern, content_split[test_number_index + 6])[0]
 
     # Extract State of Sample
-    state_of_sample = re.findall(state_of_sample_pattern, content_split[test_number_index + 7])[0]
+    # state_of_sample = re.findall(state_of_sample_pattern, content_split[test_number_index + 7])[0]
 
     # Extract Substance Sampled
-    substance_sampled = re.findall(substance_sampled_pattern, content_split[test_number_index + 8])[0]
+    # substance_sampled = re.findall(substance_sampled_pattern, content_split[test_number_index + 8])[0]
 
     # Extract samples LOT# and CAT#
     parsed_cat_lot = {
@@ -130,14 +174,14 @@ def extract_surface_test_data(pdf_path):
                         results.append(result) # adding the sample tests and data to the results array
 
     data["Test Number"] = test_number
-    data["Report Date"] = report_date
-    data["Number of Samples"] = number_of_samples
+    # data["Report Date"] = report_date
+    # data["Number of Samples"] = number_of_samples
     data["Test Name"] = test_name
-    data["Purchase Order"] = purchase_order
-    data["Date Received"] = date_received
-    data["Date Sampled"] = date_of_sample
-    data["State of Sample"] = state_of_sample
-    data["Substance Sampled"] = substance_sampled
+    # data["Purchase Order"] = purchase_order
+    # data["Date Received"] = date_received
+    # data["Date Sampled"] = date_of_sample
+    # data["State of Sample"] = state_of_sample
+    # data["Substance Sampled"] = substance_sampled
     data["Samples Data"] = parsed_cat_lot
     data["Results"] = results
     
