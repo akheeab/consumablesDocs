@@ -20,7 +20,7 @@ def extract_surface_test_data(pdf_path):
     state_of_sample_pattern = r":\s+(\w+)"
     substance_sampled_pattern = r":\s+(\w+\s+\w+)"
     sample_number_pattern = r"Sample no\.\s*:\s*(\S+)" # used to extract sample numbers
-    results_block_pattern = r"Test\s*(?:Unit)?\s*Result\s*(.*?)\s*Interpretation of sample"  # used to extract results block
+    results_block_pattern = r"Test\s*(?:Unit|UOM)?\s*Result\s*(.*?)\s*Interpretation of sample"  # used to extract results block
     results_pattern = r"^(.+?)\s+((?:[<>]?=?\s*)?\d+(?:\.\d+)?)$" # used to extract results
 
     test_data_pattern = r"\w+\s*\w*\s*\w{3}-\w{6}-\w{2}\s+.*?(?=neuroprobe|cannula|leadconfirm\s*cable|leadconfirm\s*adaptor|alphaprobe\s*cable|electrode\s*cable|$)" # used to extract sample data
