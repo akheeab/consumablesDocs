@@ -205,7 +205,12 @@ def air_test_results_check(data):
 
 def microbiological_results_check(doc, data, lot_index, index1, index2, index3):
 
+    # Check if there are more than 4 boxes or lots
+    if lot_index > 4:
+        doc.tables[1].add_row()
+
     # Write Test and Lot numbers
+    modify_table_cell(doc, 1, lot_index, 0, f"Box # {lot_index}")
     modify_table_cell(doc, 1, lot_index, 2, data["Samples"]["LOT#"][index1][index2][index3])
     modify_table_cell(doc, 1, lot_index, 3, data["Test Number"])
 
@@ -250,7 +255,7 @@ def microbiological_results_check(doc, data, lot_index, index1, index2, index3):
             else:
                 modify_table_cell(doc, 1, lot_index, 4, "☐ Pass \xa0☑ Fail")
 
-        case "alphaprobe cable":
+        case "alphaprobe cable" if "alpha" in data["Samples"]["Products"][index1].lower():
             product_string = "☐NeuroProbe \n☐Cannula \xa0\n☐ LeadConfirm cable\n☐ LeadConfirm Adaptor\n☑ AlphaProbe cable\n☐ Electrode cable"
             modify_table_cell(doc, 1, lot_index, 1, product_string, font_size=10)
             if all(value <= 100 for value in results_list):

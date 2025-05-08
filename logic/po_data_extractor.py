@@ -28,7 +28,7 @@ def extract_surface_test_data(pdf_path):
     cat_block_pattern = r"\w{3}-\w{6}-\w{2}.*?(?=\w{3}-\w{6}-\w{2}|$)"
     cat_number_pattern =r"\w{3}-\w{6}-\w{2}"
     lot_numbers_pattern = r"(?<=\w{3}-\w{6}-\w{2})\s*(.*)"
-    lot_numbers_spliter_pattern = r"[/, ]"
+    lot_numbers_spliter_pattern = r"[-/, ]"
 
     # Dict to hold all data
     data = {
