@@ -20,7 +20,7 @@ def extract_surface_test_data(pdf_path):
     state_of_sample_pattern = r":\s+(\w+)"
     substance_sampled_pattern = r":\s+(\w+\s+\w+)"
     sample_number_pattern = r"Sample no\.\s*:\s*(\S+)" # used to extract sample numbers
-    results_block_pattern = r"Test\s*(?:Unit|UOM)?\s*Result\s*(.*?)\s*Interpretation of sample"  # used to extract results block
+    results_block_pattern = r"Test\s*(?:Unit|UOM)?\s*Result\s*(.*?)\s*(?:Interpretation of sample|Remarks of sample)"  # used to extract results block
     results_pattern = r"^(.+?)\s+((?:[<>]?=?\s*)?\d+(?:\.\d+)?)$" # used to extract results
 
     test_data_pattern = r"\w+\s*\w*\s*\w{3}-\w{6}-\w{2}\s+.*?(?=neuroprobe|cannula|leadconfirm\s*cable|leadconfirm\s*adaptor|alphaprobe\s*cable|electrode\s*cable|$)" # used to extract sample data
@@ -131,7 +131,7 @@ def extract_surface_test_data(pdf_path):
 
     # Extracting data block
     for i, line in enumerate(content_split):
-        if "Interpretation" in line:
+        if "Interpretation" in line or "Remarks" in line:
             cat_lot_block = content_split[i + 2]
             break
         
@@ -206,7 +206,7 @@ def extract_air_test_data(pdf_path):
     state_of_sample_pattern = r":\s+(\w+)"
     substance_sampled_pattern = r":\s+(\w+\s+\w+)"
     sample_number_pattern = r":\s*(.*)" # used to extract sample numbers
-    results_block_pattern = r"Sample no\.\s*(.*?)(?=\nInterpretation of sample)"  # used to extract results block
+    results_block_pattern = r"Sample no\.\s*(.*?)(?=\nInterpretation of sample|Remarks of sample)"  # used to extract results block
     results_pattern = r"^(.+?)\s+((?:[<>]?=?\s*)?\d+(?:\.\d+)?)$" # used to extract results
 
     test_data_pattern = r"\w+\s*\w*\s*\w{3}-\w{6}-\w{2}\s+.*?(?=neuroprobe|cannula|leadconfirm\s*cable|leadconfirm\s*adaptor|alphaprobe\s*cable|electrode\s*cable|$)" # used to extract sample data
@@ -290,7 +290,7 @@ def extract_air_test_data(pdf_path):
     if not results_block_match:
         print("Results not found")
     else:
-        results_block_list = results_block_match[0].split("\n")
+        results_block_list = list(filter(None, results_block_match[0].split("\n")))
         results = []
         for i in range(0 ,len(results_block_list), 5): # iterate over results 
             result ={} # initialize results
